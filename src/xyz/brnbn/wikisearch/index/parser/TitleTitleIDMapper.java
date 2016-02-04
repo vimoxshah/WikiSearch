@@ -31,7 +31,7 @@ public class TitleTitleIDMapper
 			String docTitle = doc.getDocumentElement().
 								getElementsByTagName("title").item(0).getTextContent();
 		
-			context.write(new Text(docID), new Text(docTitle));
+			context.write(new Text(docTitle), new Text(docID));
 			
 		}catch(Exception ex) {
 			
