@@ -58,17 +58,18 @@ public class OutGoingLinksMapper
 	            Get get = new Get(Bytes.toBytes(OGTitle));
 	            Result rs = table.get(get);
 		           
+	            String OGTitleID = "";
 	            for(KeyValue kv : rs.raw()){
 	        	   System.out.print(new String(kv.getRow()) + " " );
 	        	   System.out.print(new String(kv.getFamily()) + ":" );
 	        	   System.out.print(new String(kv.getQualifier()) + " " );
 	        	   
-	        	   String OGTitleID = new String(kv.getValue());
+	        	   OGTitleID = new String(kv.getValue());
 	        	    
 	        	   System.out.println(OGTitleID);
 	            }
 	            
-	            OGL+=(OGTitle+",");
+	            OGL+=(OGTitleID+",");
 			}
 			OGL = OGL.substring(0, OGL.length()-1);
 			
