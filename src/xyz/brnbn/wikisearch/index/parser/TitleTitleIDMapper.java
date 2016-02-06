@@ -2,6 +2,7 @@ package xyz.brnbn.wikisearch.index.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +15,7 @@ import org.xml.sax.InputSource;
 public class TitleTitleIDMapper 
 			extends Mapper<Object, Text, Text, Text> {
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void map(Object key, Text value, Context context) 
 			throws IOException, InterruptedException {
@@ -26,11 +28,13 @@ public class TitleTitleIDMapper
 						new ByteArrayInputStream(value.toString().getBytes())));
 			
 			String docID = doc.getDocumentElement().
-									getElementsByTagName("id").item(0).getTextContent();
+									getElementsByTagName("id").item(0).getTextContent().toLowerCase();
 			
 			String docTitle = doc.getDocumentElement().
-								getElementsByTagName("title").item(0).getTextContent();
-		
+								getElementsByTagName("title").item(0).getTextContent().toLowerCase();
+
+			
+			docTitle = URLEncoder.encode(docTitle);
 			context.write(new Text(docTitle), new Text(docID));
 			
 		}catch(Exception ex) {
