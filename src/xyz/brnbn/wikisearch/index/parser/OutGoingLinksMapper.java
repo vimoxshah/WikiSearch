@@ -46,34 +46,33 @@ public class OutGoingLinksMapper
 			Pattern p = Pattern.compile("\\[\\[(.*?)\\]\\]");
 			Matcher m = p.matcher(text);
 
-			String OGL = "";
+			String OGL = "", OGTitleID = "";
+			
+			Configuration conf = HBaseConfiguration.create();
+            HTable table = new HTable(conf, "word_title");
 			
 			while(m.find()) {
 			    @SuppressWarnings("deprecation")
 				String OGTitle = URLEncoder.encode(m.group(1));
-			    
-			    Configuration conf = HBaseConfiguration.create();
-	            HTable table = new HTable(conf, "word_title");
-	                
+			        
 	            Get get = new Get(Bytes.toBytes(OGTitle));
 	            Result rs = table.get(get);
-		           
-	            String OGTitleID = "";
+		        
+	            OGL = "";
+	            OGTitleID = "";
 	            for(KeyValue kv : rs.raw()){
-	        	   System.out.print(new String(kv.getRow()) + " " );
-	        	   System.out.print(new String(kv.getFamily()) + ":" );
-	        	   System.out.print(new String(kv.getQualifier()) + " " );
+	        	   //System.out.print(new String(kv.getRow()) + " " );
+	        	   //System.out.print(new String(kv.getFamily()) + ":" );
+	        	   //System.out.print(new String(kv.getQualifier()) + " " );
 	        	   
 	        	   OGTitleID = new String(kv.getValue());
-	        	    
-	        	   System.out.println(OGTitleID);
+	        	   OGL+=(OGTitleID+","); 
+	        	   //System.out.println(OGTitleID);
 	            }
-	            
-	            OGL+=(OGTitleID+",");
 			}
 			OGL = OGL.substring(0, OGL.length()-1);
 			
-			System.out.println("for " + docID + " OGList " + OGL);
+			//System.out.println("for " + docID + " OGList " + OGL);
 			
 			context.write(new Text(docID), new Text(OGL));
 		}
