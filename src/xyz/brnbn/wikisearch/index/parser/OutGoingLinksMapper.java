@@ -49,32 +49,36 @@ public class OutGoingLinksMapper
 			String OGL = "", OGTitleID = "";
 			
 			Configuration conf = HBaseConfiguration.create();
-            HTable table = new HTable(conf, "word_title");
-			
+			HTable table = new HTable(conf, "word_title");
+
 			while(m.find()) {
-			    @SuppressWarnings("deprecation")
-				String OGTitle = URLEncoder.encode(m.group(1));
-			        
-	            Get get = new Get(Bytes.toBytes(OGTitle));
-	            Result rs = table.get(get);
-		        
-	            OGL = "";
-	            OGTitleID = "";
-	            for(KeyValue kv : rs.raw()){
-	        	   //System.out.print(new String(kv.getRow()) + " " );
-	        	   //System.out.print(new String(kv.getFamily()) + ":" );
-	        	   //System.out.print(new String(kv.getQualifier()) + " " );
-	        	   
-	        	   OGTitleID = new String(kv.getValue());
-	        	   OGL+=(OGTitleID+","); 
-	        	   //System.out.println(OGTitleID);
-	            }
+				
+				@SuppressWarnings("deprecation")
+			    String OGTitle = URLEncoder.encode(m.group(1));
+			    
+				Get get = new Get(Bytes.toBytes(OGTitle));
+				Result rs = table.get(get);
+			
+				for(KeyValue kv : rs.raw()){
+					//System.out.print(new String(kv.getRow()) + " " );
+					//System.out.print(new String(kv.getFamily()) + ":" );
+					//System.out.print(new String(kv.getQualifier()) + " " );
+			   
+					OGTitleID = new String(kv.getValue());
+					OGL+=(OGTitleID+","); 
+					//System.out.println(OGTitleID);
+			    }
 			}
-			OGL = OGL.substring(0, OGL.length()-1);
 			
-			//System.out.println("for " + docID + " OGList " + OGL);
-			
-			context.write(new Text(docID), new Text(OGL));
+			if (OGL.isEmpty()) {
+				
+				context.write(new Text(docID), new Text(""));
+			}
+			else {
+				
+				OGL = OGL.substring(0, OGL.length()-1);
+				context.write(new Text(docID), new Text(OGL));
+			}
 		}
 		catch(Exception e) {
 			

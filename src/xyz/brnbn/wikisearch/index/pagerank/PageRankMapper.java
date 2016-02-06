@@ -28,24 +28,23 @@ public class PageRankMapper
 			OGLinks.add(Integer.parseInt(st.nextToken()));
 		}
 		
-		if (OGLinks.isEmpty()) {
-			
-			System.out.println("Tell Sagar to handle zero outgoing exception !!!!!");
-			System.exit(0);
-		}
-		
 		double pr_og = INITIALRANK/OGLinks.size();
 		
 		IntWritable ogIDIW = new IntWritable();
 		DoubleWritable add_pr = new DoubleWritable(); 
+
 		
+		if (OGLinks.isEmpty()) {
+			
+			ogIDIW.set(c_doc);
+			add_pr.set(INITIALRANK);
+			context.write(ogIDIW, add_pr);
+		}
+				
 		for (Integer ogID : OGLinks) {
 			
 			ogIDIW.set(ogID);
 			add_pr.set(pr_og);
-			
-			System.out.println(ogID + " gets " + pr_og);
-			
 			context.write(ogIDIW, add_pr);
 		}
 		ogIDIW.set(c_doc);
