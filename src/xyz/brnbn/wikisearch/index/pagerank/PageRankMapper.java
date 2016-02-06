@@ -24,7 +24,6 @@ public class PageRankMapper
 		
 		while(st.hasMoreElements()) {
 			
-			System.out.println("hi");
 			OGLinks.add(Integer.parseInt(st.nextToken()));
 		}
 		
