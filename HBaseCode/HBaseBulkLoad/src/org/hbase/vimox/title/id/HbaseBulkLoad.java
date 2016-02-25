@@ -1,4 +1,4 @@
-package org.hadoop.vimox.hbase;
+package org.hbase.vimox.title.id;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

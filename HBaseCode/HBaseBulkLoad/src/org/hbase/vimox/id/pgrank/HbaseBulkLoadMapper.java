@@ -1,4 +1,4 @@
-package org.hadoop.vimox.hbase;
+package org.hbase.vimox.id.pgrank;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -14,19 +15,20 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class HbaseBulkLoadMapper extends Mapper<LongWritable, Text, ImmutableBytesWritable, Put> {
+public class HbaseBulkLoadMapper extends Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue> {
     private String hbaseTable;	
     private String dataSeperator;
     private String columnFamily1;
     private String columnFamily2;
     private ImmutableBytesWritable hbaseTableName;
+    KeyValue kv;
 
     public void setup(Context context) {
         Configuration configuration = context.getConfiguration();		
         hbaseTable = configuration.get("hbase.table.name");		
         dataSeperator = configuration.get("data.seperator");		
         columnFamily1 = configuration.get("COLUMN_FAMILY_1");		
-        columnFamily2 = configuration.get("COLUMN_FAMILY_2");		
+        	
         hbaseTableName = new ImmutableBytesWritable(Bytes.toBytes(hbaseTable));		
     }
 
@@ -34,37 +36,32 @@ public class HbaseBulkLoadMapper extends Mapper<LongWritable, Text, ImmutableByt
         try {		
             String[] values = value.toString().split(dataSeperator);
             
+          
             String rowKey = values[0];			
-          //  String[] arr = {"p1","p2","p3","p4","p5","p6","p7","p8","p9","p10"};
-           //List<String> s = Arrays.asList(arr); 
-            //s.get(i);
-            Put put = new Put(Bytes.toBytes(rowKey));
-         
+        
             StringTokenizer str = new StringTokenizer(value.toString(),",");
         	//String freq  = values[values.length - 1];
         	//put.add(Bytes.toBytes(columnFamily1), Bytes.toBytes(rowKey), Bytes.toBytes(freq));
         	
         	if(str.hasMoreTokens()){
         			
-           	for(int i=1;i<=values.length;i++){
+          	for(int i=1;i<=values.length;i++){
            		
+          		kv = new KeyValue(rowKey.getBytes(), columnFamily1.getBytes(), values[i-1].getBytes(), values[i].getBytes());
           
-            	 put.add(Bytes.toBytes(columnFamily1), Bytes.toBytes(values[i]),Bytes.toBytes(values[i+1]));
+            	 //put.add(Bytes.toBytes(columnFamily1), Bytes.toBytes(values[i]),(values[i+1]).getBytes());
             	 
-           		 i++;
+           //		 i++;
            		
          	
             hbaseTableName.set(rowKey.getBytes());
-           	context.write(hbaseTableName, put);			
+           	context.write(new ImmutableBytesWritable(rowKey.getBytes()) , kv);			
              }
             }
+            
         } catch(Exception exception) {			
             exception.printStackTrace();			
         }
     }
 
-	private String values(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

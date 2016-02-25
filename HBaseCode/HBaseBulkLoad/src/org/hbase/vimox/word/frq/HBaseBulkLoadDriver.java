@@ -1,4 +1,4 @@
-package org.hadoop.vimox.hbase;
+package org.hbase.vimox.word.frq;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -6,6 +6,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -19,9 +20,9 @@ import org.apache.hadoop.util.ToolRunner;
 
 public class HBaseBulkLoadDriver extends Configured implements Tool {	
     private static final String DATA_SEPERATOR = ",";	
-    private static final String TABLE_NAME = "index";	
-    private static final String COLUMN_FAMILY_1="postinglist1";	
-    private static final String COLUMN_FAMILY_2="postinglist2";	
+    private static final String TABLE_NAME = "word_id_frq";	
+    private static final String COLUMN_FAMILY_1="postinglist";	
+   // private static final String COLUMN_FAMILY_2="postinglist2";	
     /**
      * HBase bulk import example
      * Data preparation MapReduce job driver
@@ -43,7 +44,7 @@ public class HBaseBulkLoadDriver extends Configured implements Tool {
         }
     }
 
-    @Override
+
     public int run(String[] args) throws Exception {
         int result=0;
         String outputPath = args[1];		
@@ -51,24 +52,30 @@ public class HBaseBulkLoadDriver extends Configured implements Tool {
         configuration.set("data.seperator", DATA_SEPERATOR);		
         configuration.set("hbase.table.name",TABLE_NAME);		
         configuration.set("COLUMN_FAMILY_1",COLUMN_FAMILY_1);		
-        configuration.set("COLUMN_FAMILY_2",COLUMN_FAMILY_2);		
+      //  configuration.set("COLUMN_FAMILY_2",COLUMN_FAMILY_2);
+        
         Job job = new Job(configuration);		
         job.setJarByClass(HBaseBulkLoadDriver.class);		
         job.setJobName("Bulk Loading HBase Table::"+TABLE_NAME);		
         job.setInputFormatClass(TextInputFormat.class);		
-        job.setMapOutputKeyClass(ImmutableBytesWritable.class);		
-        job.setMapperClass(HbaseBulkLoadMapper.class);		
+        job.setMapOutputKeyClass(ImmutableBytesWritable.class);	
+        job.setMapOutputValueClass(KeyValue.class);
+        job.setMapperClass(HbaseBulkLoadMapper.class);	
+        
+        
         FileInputFormat.addInputPaths(job, args[0]);		
         FileSystem.getLocal(getConf()).delete(new Path(outputPath), true);		
         FileOutputFormat.setOutputPath(job, new Path(outputPath));		
-        job.setMapOutputValueClass(Put.class);		
+        
         HFileOutputFormat.configureIncrementalLoad(job, new HTable(configuration,TABLE_NAME));		
         job.waitForCompletion(true);		
-        if (job.isSuccessful()) {
-            HbaseBulkLoad.doBulkLoad(outputPath, TABLE_NAME);
+       
+        
+        /* if (job.isSuccessful()) {
+          //  HbaseBulkLoad.doBulkLoad(outputPath, TABLE_NAME);
         } else {
             result = -1;
-        }
+        }*/
         return result;
     }
 }
