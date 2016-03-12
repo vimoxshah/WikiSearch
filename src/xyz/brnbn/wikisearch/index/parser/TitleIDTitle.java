@@ -12,7 +12,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import xyz.brnbn.wikisearch.utils.*;
 
-public class TitleTitleID {
+public class TitleIDTitle {
 
 	public static void main(String args[]) 
 			throws IOException, ClassNotFoundException, InterruptedException {
@@ -25,12 +25,12 @@ public class TitleTitleID {
 		
 		Job job = new Job(conf);
 		
-		job.setJarByClass(TitleTitleID.class);
-		job.setJobName("XmlParser - <Title:TitleID>");
+		job.setJarByClass(TitleIDTitle.class);
+		job.setJobName("XmlParser - <TitleID:Title>");
 		job.setInputFormatClass(XmlInputFormat1.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		
-		job.setMapperClass(TitleTitleIDMapper.class);
+		job.setMapperClass(TitleIDTitleMapper.class);
 		
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
