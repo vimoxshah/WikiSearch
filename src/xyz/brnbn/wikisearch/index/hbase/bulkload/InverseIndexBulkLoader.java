@@ -18,12 +18,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class PageRankBulkLoader extends Configured implements Tool {
+public class InverseIndexBulkLoader extends Configured implements Tool {
  	
     public static void main(String[] args) {
     	
 		try {
-		        int response = ToolRunner.run(HBaseConfiguration.create(), new PageRankBulkLoader(), args);
+		        int response = ToolRunner.run(HBaseConfiguration.create(), new InverseIndexBulkLoader(), args);
 		        if(response == 0) {
 		        	
 		            System.out.println("Job is successfully completed...");
@@ -46,8 +46,8 @@ public class PageRankBulkLoader extends Configured implements Tool {
         Configuration configuration = getConf();		
         
         Job job = new Job(configuration);		
-        job.setJarByClass(PageRankBulkLoader.class);		
-        job.setJobName("Bulk Loading HBase Table::" + CreateHBaseTables.HTABLE_PAGERANK);
+        job.setJarByClass(InverseIndexBulkLoader.class);		
+        job.setJobName("Bulk Loading HBase Table::" + CreateHBaseTables.HTABLE_POSTINGLIST);
         
         job.setMapperClass(InverseIndexBulkLoaderMapper.class);
         
@@ -60,10 +60,11 @@ public class PageRankBulkLoader extends Configured implements Tool {
         FileSystem.getLocal(getConf()).delete(new Path(outputPath), true);		
         FileOutputFormat.setOutputPath(job, new Path(outputPath));		
         
-        HFileOutputFormat.configureIncrementalLoad(job, new HTable(configuration, CreateHBaseTables.HTABLE_PAGERANK));		
+        HFileOutputFormat.configureIncrementalLoad(job, new HTable(configuration, CreateHBaseTables.HTABLE_POSTINGLIST));		
         job.waitForCompletion(true);		
    
         return 0;
     }
 
 }
+
