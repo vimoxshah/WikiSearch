@@ -10,11 +10,18 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 
 public class CreateHBaseTables {
 
-	final static String HTABLE_POSTINGLIST = "post_idf_tf";
-	final static String HTABLE_PAGERANK = "pagerank";
-	final static String HTABLE_DOCWORDCOUNT = "doc_word_count";
-	final static String HTABLE_DOCIDTITLE = "docid_title";
-	final static String HTABLE_TITLEDOCID = "title_docid";
+	public final static String HTABLE_POSTINGLIST = "post_idf_tf";
+	public final static String HTABLE_PAGERANK = "pagerank";
+	public final static String HTABLE_DOCWORDCOUNT = "doc_word_count";
+	public final static String HTABLE_DOCIDTITLE = "docid_title";
+	public final static String HTABLE_TITLEDOCID = "title_docid";
+	
+	public final static String COLFAMILY_DOCID = "DOCID_COLFAMILY";
+	public final static String COLFAMILY_TITLE = "TITLE_COLFAMILY";
+	public final static String COLFAMILY_WORDCOUNT = "WORDCOUNT_COLFAMILY";
+	public final static String COLFAMILY_PAGERANK = "RANK_COLFAMILY";
+	public final static String COLFAMILY_DOCID_TF = "DOCID_TF_COLFAMILY";	
+	public final static String COLFAMILY_IDF = "IDF_COLFAMILY";
 	
 	public static void main(String[] args) 
 			throws IOException {
@@ -30,8 +37,8 @@ public class CreateHBaseTables {
 		 * creating PostingList Tf_Idf table                                    *
 		 ************************************************************************/
 		htable = new HTableDescriptor(HTABLE_POSTINGLIST);
-		htable.addFamily(new HColumnDescriptor("IDF_COLFAMILY"));
-		htable.addFamily(new HColumnDescriptor("DOCID_TF_COLFAMILY"));
+		htable.addFamily(new HColumnDescriptor(COLFAMILY_IDF));
+		htable.addFamily(new HColumnDescriptor(COLFAMILY_DOCID_TF));
 		
 		System.out.printf( "Creating Table(%s)...\n", HTABLE_POSTINGLIST );
 		admin.createTable(htable) ;
@@ -41,7 +48,7 @@ public class CreateHBaseTables {
 		 * creating Document PageRank table                                     *
 		 ************************************************************************/
 		htable = new HTableDescriptor(HTABLE_PAGERANK);
-		htable.addFamily(new HColumnDescriptor("RANK_COLFAMILY"));
+		htable.addFamily(new HColumnDescriptor(COLFAMILY_PAGERANK));
 		
 		System.out.printf("Creating Table(%s)...\n", HTABLE_PAGERANK);
 		admin.createTable(htable) ;
@@ -51,7 +58,7 @@ public class CreateHBaseTables {
 		 * creating Document Word Count table                                   *
 		 ************************************************************************/
 		htable = new HTableDescriptor(HTABLE_DOCWORDCOUNT);
-		htable.addFamily(new HColumnDescriptor("WORDCOUNT_COLFAMILY"));
+		htable.addFamily(new HColumnDescriptor(COLFAMILY_WORDCOUNT));
 		
 		System.out.printf("Creating Table(%s)...\n", HTABLE_DOCWORDCOUNT);
 		admin.createTable(htable) ;
@@ -61,7 +68,7 @@ public class CreateHBaseTables {
 		 * creating Document ID Title table                                     *
 		 ************************************************************************/
 		htable = new HTableDescriptor(HTABLE_DOCIDTITLE);
-		htable.addFamily(new HColumnDescriptor("TITLE_COLFAMILY"));
+		htable.addFamily(new HColumnDescriptor(COLFAMILY_TITLE));
 		
 		System.out.printf("Creating Table(%s)...\n", HTABLE_DOCIDTITLE);
 		admin.createTable(htable) ;
@@ -71,7 +78,7 @@ public class CreateHBaseTables {
 		 * creating Title Document Id table                                     *
 		 ************************************************************************/
 		htable = new HTableDescriptor(HTABLE_TITLEDOCID);
-		htable.addFamily(new HColumnDescriptor("DOCID_COLFAMILY"));
+		htable.addFamily(new HColumnDescriptor(COLFAMILY_DOCID));
 		
 		System.out.printf("Creating Table(%s)...\n", HTABLE_TITLEDOCID);
 		admin.createTable(htable) ;
