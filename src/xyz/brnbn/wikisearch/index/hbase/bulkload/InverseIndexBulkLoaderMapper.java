@@ -20,7 +20,7 @@ public class InverseIndexBulkLoaderMapper
     	
     	if (!value.toString().isEmpty()) {
     		
-    		StringTokenizer st = new StringTokenizer(value.toString(), Configurations.DATA_DELIMITOR);
+    		StringTokenizer st = new StringTokenizer(value.toString(), Configurations.DATA_DELIMITER);
     		byte[] rowKey = st.nextToken().getBytes();			
 			KeyValue kv = new KeyValue(rowKey, CreateHBaseTables.COLFAMILY_IDF.getBytes(), "IDF".getBytes(), st.nextToken().getBytes());
 			ImmutableBytesWritable rk = new ImmutableBytesWritable(rowKey);

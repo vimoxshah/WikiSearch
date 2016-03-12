@@ -20,7 +20,7 @@ public class DocWordCountBulkLoaderMapper
     	
     	if (!value.toString().isEmpty()) {
     		
-    		StringTokenizer st = new StringTokenizer(value.toString(), Configurations.DATA_DELIMITOR);
+    		StringTokenizer st = new StringTokenizer(value.toString(), Configurations.DATA_DELIMITER);
     		byte[] rowKey = st.nextToken().getBytes();			
 			KeyValue kv = new KeyValue(rowKey, CreateHBaseTables.COLFAMILY_WORDCOUNT.getBytes(), "WORDCOUNT".getBytes(), st.nextToken().getBytes());
 			context.write(new ImmutableBytesWritable(rowKey), kv);
