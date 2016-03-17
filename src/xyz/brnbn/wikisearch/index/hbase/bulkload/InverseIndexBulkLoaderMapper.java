@@ -27,9 +27,7 @@ public class InverseIndexBulkLoaderMapper
 			context.write(rk, kv);
 			while(st.hasMoreTokens()) {
 				
-				kv = new KeyValue(rowKey, CreateHBaseTables.COLFAMILY_DOCID_TF.getBytes(), "DOCID".getBytes(), st.nextToken().getBytes());
-				context.write(rk, kv);
-				kv = new KeyValue(rowKey, CreateHBaseTables.COLFAMILY_DOCID_TF.getBytes(), "TF".getBytes(), st.nextToken().getBytes());
+				kv = new KeyValue(rowKey, CreateHBaseTables.COLFAMILY_DOCID_TF.getBytes(), st.nextToken().getBytes(), st.nextToken().getBytes());
 				context.write(rk, kv);
 			}
     	}
