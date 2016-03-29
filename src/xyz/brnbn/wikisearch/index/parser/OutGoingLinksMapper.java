@@ -23,8 +23,25 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import xyz.brnbn.wikisearch.index.hbase.setup.CreateHBaseTables;
+
 public class OutGoingLinksMapper 
 			extends Mapper<Object, Text, Text, Text> {
+	
+	static Configuration conf = null;
+	static HTable table = null;
+	
+	static {
+		
+		try {
+			
+			conf = HBaseConfiguration.create();
+			table = new HTable(conf, CreateHBaseTables.HTABLE_TITLEDOCID);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public void map(Object key, Text value, Context context) 
@@ -48,9 +65,7 @@ public class OutGoingLinksMapper
 
 			String OGL = "", OGTitleID = "";
 			
-			Configuration conf = HBaseConfiguration.create();
-			HTable table = new HTable(conf, "word_title");
-
+			
 			while(m.find()) {
 				
 				@SuppressWarnings("deprecation")
@@ -60,13 +75,8 @@ public class OutGoingLinksMapper
 				Result rs = table.get(get);
 			
 				for(KeyValue kv : rs.raw()){
-					//System.out.print(new String(kv.getRow()) + " " );
-					//System.out.print(new String(kv.getFamily()) + ":" );
-					//System.out.print(new String(kv.getQualifier()) + " " );
-			   
 					OGTitleID = new String(kv.getValue());
 					OGL+=(OGTitleID+","); 
-					//System.out.println(OGTitleID);
 			    }
 			}
 			

@@ -41,7 +41,7 @@ public class FIIReducer
 			//System.out.println(key.toString() + " : " + doc + " : " + docMap.get(doc));
 			
 			postingList += (doc + ",");
-			postingList += String.valueOf(docMap.get(doc)) + ",";
+			postingList += String.valueOf(1+Math.log10(docMap.get(doc))) + ",";
 		}
 		postingList = postingList.substring(0, postingList.length()-1);
 		context.write(key, new Text(postingList));
