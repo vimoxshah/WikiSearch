@@ -25,7 +25,7 @@ public class TitleTitleID {
 		
 		Job job = new Job(conf);
 		
-		job.setJarByClass(FII.class);
+		job.setJarByClass(TitleTitleID.class);
 		job.setJobName("XmlParser - <Title:TitleID>");
 		job.setInputFormatClass(XmlInputFormat1.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
@@ -38,8 +38,7 @@ public class TitleTitleID {
 		
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		
-		
+				
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 }
