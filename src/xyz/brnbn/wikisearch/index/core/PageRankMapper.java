@@ -27,10 +27,10 @@ public class PageRankMapper
 			OGLinks.add(Integer.parseInt(st.nextToken()));
 		}
 		
-		double pr_og = INITIALRANK/OGLinks.size();
+		double pr_og = INITIALRANK/(OGLinks.size()+1);
 		
 		IntWritable ogIDIW = new IntWritable();
-		DoubleWritable add_pr = new DoubleWritable(); 
+		DoubleWritable add_pr = new DoubleWritable(pr_og); 
 
 		
 		if (OGLinks.isEmpty()) {
@@ -43,11 +43,9 @@ public class PageRankMapper
 		for (Integer ogID : OGLinks) {
 			
 			ogIDIW.set(ogID);
-			add_pr.set(pr_og);
 			context.write(ogIDIW, add_pr);
 		}
 		ogIDIW.set(c_doc);
-		add_pr.set(0.0);
 		context.write(ogIDIW, add_pr);
 	}
 } 

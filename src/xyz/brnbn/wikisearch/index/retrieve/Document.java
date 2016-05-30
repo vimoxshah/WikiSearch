@@ -4,7 +4,7 @@ public class Document implements Comparable<Document>{
 
 	private int docId;
 	private double tf;
-	private double pagerank = 1.0;
+	private double pagerank;
 	private String  title;
 	
 	public String getTitle() {
@@ -42,8 +42,8 @@ public class Document implements Comparable<Document>{
 	@Override
 	public int compareTo(Document o) {
 		
-		Double rank1 = this.tf;//*this.pagerank;
-		Double rank2 = o.tf;//*o.pagerank;
+		Double rank1 = this.tf*this.pagerank;
+		Double rank2 = o.tf*o.pagerank;
 		return rank2.compareTo(rank1);
 	}
 	

@@ -2,9 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/qwerty/jarfiles/downloaded/w3c-dom.jar"/>
-	<classpathentry kind="lib" path="/home/qwerty/jarfiles/downloaded/wikixmlj-r-45.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Hadoop1.2.1"/>
+	<classpathentry kind="lib" path="/home/sagarpatel/ubin/vimox/hadoop-1.2.1/wikixmlj-r-45.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Hadoop1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HBase"/>
+	<classpathentry kind="lib" path="/home/sagarpatel/ubin/vimox/hadoop-1.2.1/commons-compress-1.5.jar"/>
+	<classpathentry kind="lib" path="/home/sagarpatel/ubin/vimox/hadoop-1.2.1/bliki-core-3.0.16.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

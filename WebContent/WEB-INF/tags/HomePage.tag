@@ -28,13 +28,15 @@
         <div class="search-bar row">
         
             <div class="middle">
-                <form action="SearchResult.jsp" method="get">
+                <form method="get">
                     <div class="input-group">
                         <input class="form-control" name="query" id="query" type="search" placeholder="Enter Your Search Here" x-webkit-speech="">
                         <div class="input-group-btn">
-                            <button class="btn btn-primary btn-lg search-btn" type="submit"> Go! </button>
-                        </div>
+                            <button class="btn btn-primary btn-lg search-btn" type="submit" onclick="form.action='SearchResult.jsp';"> Go! </button>
+                        </div>                        
                     </div>
+                    <br />
+                    <button class="btn btn-primary" type="submit" onclick="form.action='LuckyResult';"> Test Your Luck! </button>
                 </form>
             </div>
         

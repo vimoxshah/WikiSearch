@@ -25,23 +25,31 @@
         <h5>Search Results for “<%=query%>”</h5>
         
             
-            <table>
+            <table style="border-bottom: thick; border-bottom-color: black;">
             
             <%for (Document t : al) { 
             	//t = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, t); %>
 	           
-	           <tr>
-	           <td style="width:70%">
-	            <div class="link">
-	                <a href="https://en.wikipedia.org/w/index.php?title=<%=t.getTitle()%>" s="false">
-	                    <div class="link-title"><%=t.getTitle()%></div>
-	                    <div class="link-host">https://en.wikipedia.org/w/index.php?title=<%=t%></div>
-	                </a>
-	            </div>
-	           </td>          
+	           <%if (t.getTitle().contains(":")) 
+	           			continue;%>
 	           
+	           <tr>
+		           <td style="width:70%">
+		            <div class="link">
+		                <a href="https://en.wikipedia.org/w/index.php?title=<%=t.getTitle()%>" s="false">
+		                    <div class="link-title"><%=t.getTitle()%></div>
+		                    <div class="link-host">https://en.wikipedia.org/w/index.php?title=<%=t.getTitle()%></div>
+		                </a>
+		            </div>
+		           </td>          
 	           </tr>
-            
+	           
+	           <%if (!query.startsWith("**")) {%>
+	           <tr>
+	       	 	   <td>Pagerank: <%=t.getPagerank()%></td>
+	         	   <td>TermFrequency: <%=t.getTf()%></td>
+	           </tr>
+	           <%} %>
             <% } %>
            
            </table>

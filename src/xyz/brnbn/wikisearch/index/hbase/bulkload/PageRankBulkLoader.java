@@ -1,5 +1,6 @@
 package xyz.brnbn.wikisearch.index.hbase.bulkload;
 
+import xyz.brnbn.wikisearch.index.core.PageRankMapper;
 import xyz.brnbn.wikisearch.index.hbase.setup.CreateHBaseTables;
 
 import org.apache.hadoop.conf.Configuration;
@@ -49,7 +50,7 @@ public class PageRankBulkLoader extends Configured implements Tool {
         job.setJarByClass(PageRankBulkLoader.class);		
         job.setJobName("Bulk Loading HBase Table::" + CreateHBaseTables.HTABLE_PAGERANK);
         
-        job.setMapperClass(InverseIndexBulkLoaderMapper.class);
+        job.setMapperClass(PageRankBulkLoaderMapper.class);
         
         job.setInputFormatClass(TextInputFormat.class);		
         job.setMapOutputKeyClass(ImmutableBytesWritable.class);	

@@ -1,7 +1,7 @@
 package xyz.brnbn.wikisearch.index.retrieve;
 
-import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -18,79 +18,118 @@ import xyz.brnbn.wikisearch.utils.Porter;
 
 public class IndexRetrieval {
 
-	static Configuration conf = null;
-	static HTable table_post = null;
-	static HTable table_pagerank = null;
-	static HTable table_docid_title = null;
+	public static String correct(String s){
+		StringBuilder sb =new StringBuilder(s);
+		sb.setCharAt(0, Character.toUpperCase(s.charAt(0)));
+		for(int i=0;i<s.length();i++){
+			if(s.charAt(i)==' ' || s.charAt(i)==','){
+				sb.setCharAt(i+1, Character.toUpperCase(s.charAt(i+1)));
+			}
+		}
+		return sb.toString();
+		
+	}
 	
-	static {
+	
+	/**
+	 * @param query
+	 * @return
+	 */
+	
+	public static ArrayList<Document> retrieve(String query) {
 		
 		try {
 			
-			conf = HBaseConfiguration.create();
-			table_post = new HTable(conf, CreateHBaseTables.HTABLE_POSTINGLIST);
-			table_pagerank = new HTable(conf, CreateHBaseTables.HTABLE_PAGERANK);
-			table_docid_title = new HTable(conf, CreateHBaseTables.HTABLE_DOCIDTITLE);
+			Configuration conf = HBaseConfiguration.create();
+			HTable table_post = new HTable(conf, CreateHBaseTables.HTABLE_POSTINGLIST);
+			HTable  table_pagerank = new HTable(conf, CreateHBaseTables.HTABLE_PAGERANK);
+			HTable  table_docid_title = new HTable(conf, CreateHBaseTables.HTABLE_DOCIDTITLE);
+			HTable  table_title_docid = new HTable(conf, CreateHBaseTables.HTABLE_TITLEDOCID);
+			ArrayList<Document> docs = new ArrayList<>();
+			ArrayList<Document> docs1 = new ArrayList<>();
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static ArrayList<String> retrieve(String query) throws IOException {
-		
-		ArrayList<String> result = new ArrayList<>();
-		
-		query = (new Porter()).stripAffixes(query);
-		
-		System.out.println("************ " + query);
-		
-		ArrayList<Document> docs = new ArrayList<>();
-		Get get = new Get(Bytes.toBytes(query));
-		Result rs = table_post.get(get);
-		for(KeyValue kv : rs.raw()) {
+			if (query.startsWith("**")) {
 			
-			String family = new String(kv.getFamily());
-			String docId = new String(kv.getQualifier());
-			String tf = new String(kv.getValue());
-			if (family.equals(CreateHBaseTables.COLFAMILY_DOCID_TF)) {
-				
-				Document doc = new Document();
-				doc.setDocId(Integer.parseInt(docId));
-				doc.setTf(Double.parseDouble(tf));
-	/*			
-				Get getPR = new Get(Bytes.toBytes(docId));
-				Result rsPR = table_pagerank.get(getPR);
-				for (KeyValue kvPR : rsPR.raw()) {
+				boolean flag = false;
+				Get get = new Get(Bytes.toBytes(URLEncoder.encode(query.substring(2).toLowerCase())));
+				Result rsTT = table_title_docid.get(get);
+				Result rs = table_post.get(get);
+				for (KeyValue kvTT : rsTT.raw()) {
 					
-					String PR = new String(kvPR.getValue());
-					doc.setPagerank(Double.parseDouble(PR));
+					flag = true;
+					Document d = new Document();
+					String t = URLDecoder.decode(new String(kvTT.getRow()));
+					t=correct(t);
+					d.setTitle(t);
+					docs.add(d);
 				}
-		*/		
-				Get getT = new Get(Bytes.toBytes(docId));
-				Result rsT = table_docid_title.get(getT);
-				for (KeyValue kvT : rsT.raw()) {
-					
-					@SuppressWarnings("deprecation")
-					String title = URLDecoder.decode(new String(kvT.getValue()));
-					doc.setTitle(title);
-				}
-				docs.add(doc);
+				if (flag) 
+					return docs;
 			}
-	    }
-		Collections.sort(docs);
-		
-		for (Document doc:docs) {
-		
-			System.out.println(doc.getTitle());// + " | " + doc.getTf() + " * " + doc.getPagerank() + " : " + String.valueOf(doc.getTf()*doc.getPagerank()));
-			result.add(doc.getTitle());
+			
+			//query = (new Porter()).stripAffixes(query);
+			
+			//System.out.println("************ " + query);
+			
+			String lquery = query.toLowerCase();
+			
+			Get get1 = new Get(Bytes.toBytes(lquery));
+			Result rs1 = table_post.get(get1);
+			for(KeyValue kv : rs1.raw()) {
+				
+				String family = new String(kv.getFamily());
+				String docId = new String(kv.getQualifier());
+				String tf = new String(kv.getValue());
+				if (family.equals(CreateHBaseTables.COLFAMILY_DOCID_TF)) {
+					
+					Document doc = new Document();
+					doc.setDocId(Integer.parseInt(docId));
+					doc.setTf(Double.parseDouble(tf));
+					
+					Get getPR = new Get(Bytes.toBytes(docId));
+					Result rsPR = table_pagerank.get(getPR);
+					for (KeyValue kvPR : rsPR.raw()) {
+						
+						String PR = new String(kvPR.getValue());
+						doc.setPagerank(Double.parseDouble(PR));
+					}
+			
+					Get getT = new Get(Bytes.toBytes(docId));
+					Result rsT = table_docid_title.get(getT);
+					for (KeyValue kvT : rsT.raw()) {
+						
+						@SuppressWarnings("deprecation")
+						String title = URLDecoder.decode(new String(kvT.getValue()));
+						doc.setTitle(title);
+					}
+					if (doc.getTitle().toLowerCase().contains(lquery))
+						docs1.add(doc);
+					else
+						docs.add(doc);
+				}
+		    }
+			Collections.sort(docs);
+			/*System.out.println("List: ");
+			for (Document d : docs) {
+				
+				System.out.println("->"+d.getTitle());
+			}
+			*/
+			if (docs1.size()>0) {
+				Collections.sort(docs1);
+				for (int i=docs1.size()-1;i>=0;i--) {
+					docs.add(0, docs1.get(i));
+				}
+			}
+			return docs;
+		} catch (Exception e) {
+			
+			return new ArrayList<Document>();
 		}
-		
-		return result;
 	}
 	
-	public static void main(String args[]) throws IOException {
+	/*public static void main(String args[]) {
 		
-		retrieve("wedding");
-	}
+		retrieve("computer");
+	}*/
 }

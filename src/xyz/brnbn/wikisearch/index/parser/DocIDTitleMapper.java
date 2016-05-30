@@ -12,8 +12,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-public class DocIDTitleMapper 
-			extends Mapper<Object, Text, Text, Text> {
+public class DocIDTitleMapper extends Mapper<Object, Text, Text, Text> {
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -27,13 +26,10 @@ public class DocIDTitleMapper
 			Document doc = dBuilder.parse(new InputSource(
 						new ByteArrayInputStream(value.toString().getBytes())));
 			
-			String docID = doc.getDocumentElement().
-									getElementsByTagName("id").item(0).getTextContent().toLowerCase();
-			
-			String docTitle = doc.getDocumentElement().
-								getElementsByTagName("title").item(0).getTextContent().toLowerCase();
+			String docID = doc.getDocumentElement().getElementsByTagName("id").item(0).getTextContent();
 
-			
+			String docTitle = doc.getDocumentElement().getElementsByTagName("title").item(0).getTextContent();
+	
 			docTitle = URLEncoder.encode(docTitle);
 			context.write(new Text(docID), new Text(docTitle));
 			
